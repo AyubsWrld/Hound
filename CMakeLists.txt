@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 3.16) 
+
+project(
+    Hound
+    LANGUAGES C CXX
+    VERSION 0.1
+)
+
+#set(GStreamer_DIR ${CMAKE_SOURCE_DIR}/libs/gstreamer-1.28.3/cmake)
+
+
+
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS On)
+set(CXX_STANDARD 23) 
+set(CXX_STANDARD_REQUIRED On)
+
+add_executable(arasaka src/main.cpp)
+
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+# for finding the Find<package_name>.cmake files.
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+    find_package(GStreamer REQUIRED)
+    find_package(GLIB2 REQUIRED)
+
+    target_link_libraries(
+        arasaka 
+        PUBLIC 
+        ${GStreamer_LIBRARIES}
+        ${GLIB2_LIBRARIES}
+    )
+    target_include_directories(
+        arasaka
+        PUBLIC 
+        ${GStreamer_INCLUDE_DIR}
+        ${GLIB2_INCLUDE_DIR}
+    )
+else()
+    message( WARNING "Cross-Compiling for Windows")
+    target_link_libraries(
+        arasaka 
+        PUBLIC
+        /usr/mingw64/bin/libgstreamer-1.0-0.dll
+        /usr/mingw64/bin/libglib-2.0-0.dll
+    )
+    target_include_directories(
+        arasaka 
+        PUBLIC
+        /usr/include/glib-2.0/
+        /usr/include/gst/
+    )
+endif()
+
+
+
